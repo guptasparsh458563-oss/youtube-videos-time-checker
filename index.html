@@ -62,6 +62,9 @@
   <h1>🎥 YouTube Videos Time Checker</h1>
 
   <div class="card">
+    <h3>📺 Enter YouTube Channel URL or ID</h3>
+    <input type="text" id="youtubeLink" placeholder="e.g. https://www.youtube.com/@channelname">
+
     <h3>🌍 Select Your Country & Timezone</h3>
     <select id="timezone"></select>
 
@@ -74,7 +77,7 @@
     <button id="nextBtn">Next →</button>
   </div>
 
-  <script>
+<script>
   // --- Load all timezones dynamically ---
   const timezoneSelect = document.getElementById("timezone");
   Intl.supportedValuesOf("timeZone").forEach(zone => {
@@ -98,28 +101,19 @@
       return;
     } 
     else if (videos <= 70) {
-      price = Math.floor(videos * 0.7); // normal rate
+      price = Math.floor(videos * 0.7); // ₹0.7 per video up to 70
     } 
     else {
-      price = Math.floor(videos * 0.7 * 0.9); // 10% off
+      price = Math.floor(videos * 0.7 * 0.9); // 10% discount above 70
     }
 
     priceDisplay.textContent = `₹${price} for ${videos} videos`;
   }
 
-  // --- Add input box for YouTube link ---
-  const youtubeInputDiv = document.createElement("div");
-  youtubeInputDiv.classList.add("input-group");
-  youtubeInputDiv.innerHTML = `
-    <label for="youtubeLink">📺 Enter YouTube Channel URL or ID:</label>
-    <input type="text" id="youtubeLink" placeholder="e.g. https://www.youtube.com/@channelname">
-  `;
-  document.querySelector("form").insertBefore(youtubeInputDiv, document.querySelector(".input-group:nth-of-type(2)"));
-
-  // --- Event listeners ---
   videoCountInput.addEventListener("input", updatePrice);
   updatePrice();
 
+  // --- Next Button Click Event ---
   document.getElementById("nextBtn").addEventListener("click", () => {
     const url = document.getElementById("youtubeLink").value.trim();
     if (!url) {
@@ -129,7 +123,9 @@
 
     const videos = parseInt(videoCountInput.value);
     const selectedZone = timezoneSelect.value;
-    alert(`✅ Channel: ${url}\n🌍 Timezone: ${selectedZone}\n🎞️ Videos: ${videos}\n💰 Price: ${priceDisplay.textContent}`);
+    const price = priceDisplay.textContent;
+
+    alert(`✅ Channel: ${url}\n🌍 Timezone: ${selectedZone}\n🎞️ Videos: ${videos}\n💰 Price: ${price}`);
   });
 </script>
 
