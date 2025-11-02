@@ -1,284 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YouTube Videos Time Checker</title>
-
   <style>
-    :root{
-      --bg1:#0f1724; --bg2:#1f2937; --card:#0b1220;
-      --accent:#ff4d4f; --muted:#98a0ad; --glass: rgba(255,255,255,0.04);
+    body {
+      background: linear-gradient(135deg, #1a1a1a, #000000);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-      background: linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 100%);
-      color:#e6eef6; display:flex; align-items:center; justify-content:center; padding:28px;
+    h1 {
+      font-size: 28px;
+      color: #ff3333;
     }
-
-    .app {
-      width:100%; max-width:980px; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-      border-radius:14px; box-shadow: 0 12px 40px rgba(3,6,23,0.6); padding:20px; border:1px solid rgba(255,255,255,0.03);
+    select, input {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
     }
-
-    header { display:flex; align-items:center; gap:14px; padding:6px 10px 18px; border-bottom:1px solid rgba(255,255,255,0.02); }
-    .logo {
-      width:56px; height:56px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#ff7b7b);
-      display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff;
-      box-shadow:0 6px 18px rgba(255,77,79,0.18);
+    .card {
+      background: rgba(255,255,255,0.05);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+      width: 320px;
+      margin-top: 20px;
     }
-    h1 { margin:0; font-size:20px; }
-    p.subtitle { margin:2px 0 0; color:var(--muted); font-size:13px; }
-
-    .grid { display:grid; grid-template-columns: 1fr 420px; gap:18px; margin-top:18px; }
-    @media (max-width:880px){ .grid{grid-template-columns:1fr} }
-
-    /* left panel */
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
-      padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02);
+    button {
+      background: #ff3333;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
     }
-
-    label { display:block; font-size:13px; color:var(--muted); margin-bottom:8px; }
-    input[type="text"], select, input[type="number"] {
-      width:100%; padding:12px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03);
-      background:var(--card); color:#e7f0fb; font-size:14px;
+    button:hover {
+      background: #ff5555;
     }
-
-    .small { font-size:13px; color:var(--muted); margin-top:6px; }
-
-    .row { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
-    .half { flex:1; }
-
-    /* slider style */
-    .sliderWrap { margin:10px 0 2px; }
-    input[type="range"]{ width:100%; appearance:none; height:8px; border-radius:8px; background:linear-gradient(90deg,var(--accent),#ff7b7b); outline:none }
-    input[type="range"]::-webkit-slider-thumb { appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.4) }
-
-    .priceBox {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      padding:12px; border-radius:10px; text-align:center; border:1px solid rgba(255,255,255,0.02);
+    .price {
+      font-size: 20px;
+      color: #00ff99;
+      margin-top: 10px;
     }
-    .priceBig { font-size:24px; font-weight:700; color:#fff; }
-    .priceSmall { font-size:13px; color:var(--muted); margin-top:6px; }
-
-    .btnRow { display:flex; gap:10px; margin-top:12px; align-items:center; }
-    button.primary {
-      background: linear-gradient(90deg,var(--accent),#ff7b7b); color:#fff; border:none; padding:10px 14px; border-radius:10px;
-      font-weight:600; cursor:pointer; box-shadow:0 8px 26px rgba(255,77,79,0.14);
-    }
-    button.ghost { background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.02); padding:10px 12px; border-radius:10px; cursor:pointer; }
-
-    /* right panel - results */
-    .resultsTitle { font-weight:700; margin-bottom:10px; }
-    .placeholder { color:var(--muted); font-size:14px; padding:20px; background:var(--glass); border-radius:10px; text-align:center; }
-
-    .videoList { margin-top:12px; max-height:420px; overflow:auto; padding-right:6px; }
-    .videoCard { display:flex; gap:12px; padding:10px; border-radius:10px; background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.01)); margin-bottom:10px; align-items:center; border:1px solid rgba(255,255,255,0.02); }
-    .thumb { width:120px; height:68px; background:#0b1220; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
-    .meta { flex:1; overflow:hidden; }
-    .meta h4 { margin:0 0 6px; font-size:15px; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
-    .meta p { margin:0; color:var(--muted); font-size:13px; }
-
-    footer { margin-top:18px; color:var(--muted); font-size:13px; text-align:center; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="logo">YT</div>
-      <div>
-        <h1>YouTube Videos Time Checker</h1>
-        <p class="subtitle">Enter a channel link/ID, choose timezone, number of videos & get publish times and views.</p>
-      </div>
-    </header>
+  <h1>🎥 YouTube Videos Time Checker</h1>
 
-    <div class="grid">
-      <!-- LEFT: controls -->
-      <div class="panel">
-        <label for="channelInput">YouTube channel URL or @username or channel ID</label>
-        <input id="channelInput" type="text" placeholder="e.g. https://www.youtube.com/@MrBeast or UCxxxxx">
+  <div class="card">
+    <h3>🌍 Select Your Country & Timezone</h3>
+    <select id="timezone"></select>
 
-        <label for="tzSelect">Select Timezone (country)</label>
-        <select id="tzSelect">
-          <!-- a useful set of timezones; we'll expand if you want more -->
-          <option value="Asia/Kolkata">🇮🇳 India — Asia/Kolkata (IST)</option>
-          <option value="UTC">🌐 UTC — Coordinated Universal Time</option>
-          <option value="Europe/London">🇬🇧 UK — Europe/London (GMT/BST)</option>
-          <option value="America/Los_Angeles">🇺🇸 USA — America/Los_Angeles (PST/PDT)</option>
-          <option value="America/New_York">🇺🇸 USA — America/New_York (EST/EDT)</option>
-          <option value="Asia/Dubai">🇦🇪 UAE — Asia/Dubai (GST)</option>
-          <option value="Asia/Tokyo">🇯🇵 Japan — Asia/Tokyo (JST)</option>
-          <option value="Australia/Sydney">🇦🇺 Australia — Australia/Sydney (AEST)</option>
-          <option value="Europe/Berlin">🇩🇪 Germany — Europe/Berlin (CET/CEST)</option>
-          <option value="Africa/Cairo">🇪🇬 Egypt — Africa/Cairo (EET)</option>
-        </select>
+    <h3>🎞️ How many videos’ data do you want?</h3>
+    <input type="number" id="videoCount" value="50" min="1" max="1000">
 
-        <label for="videoCount">How many videos do you want? <span class="small">(Min 1)</span></label>
-        <div class="row">
-          <input id="videoCount" type="number" min="1" value="50" class="half" />
-          <div class="half small" style="align-self:center; text-align:right;">Max 600</div>
-        </div>
+    <h3>💰 Estimated Price:</h3>
+    <div class="price" id="priceDisplay">₹49 for 50 videos</div>
 
-        <div class="sliderWrap">
-          <input type="range" id="videoRange" min="1" max="600" value="50" />
-        </div>
-
-        <div class="priceBox" style="margin-top:10px;">
-          <div class="priceBig" id="priceBig">₹49</div>
-          <div class="priceSmall" id="priceSmall">for <span id="priceVideos">50</span> videos</div>
-        </div>
-
-        <div class="btnRow">
-          <button class="primary" id="nextBtn">Next →</button>
-          <button class="ghost" id="resetBtn">Reset</button>
-        </div>
-
-        <p class="small" style="margin-top:12px;">Free for first 30 videos. Pricing uses your formula: ≤70 → ₹49; >70 → floor(v×0.7×0.9)</p>
-      </div>
-
-      <!-- RIGHT: results -->
-      <div class="panel">
-        <div class="resultsTitle">Results</div>
-        <div id="resultsArea" class="placeholder">
-          Enter details on the left and click <strong>Next →</strong> to fetch video details.
-        </div>
-
-        <!-- video list (populated later) -->
-        <div id="videoList" class="videoList" style="display:none;"></div>
-      </div>
-    </div>
-
-    <footer>© 2025 YouTube Videos Time Checker — Built by you</footer>
+    <button id="nextBtn">Next →</button>
   </div>
 
   <script>
-    // --- helpers for pricing and UI ---
-    const videoCountInput = document.getElementById('videoCount');
-    const videoRange = document.getElementById('videoRange');
-    const priceBig = document.getElementById('priceBig');
-    const priceSmall = document.getElementById('priceSmall');
-    const priceVideos = document.getElementById('priceVideos');
-    const tzSelect = document.getElementById('tzSelect');
-    const channelInput = document.getElementById('channelInput');
-
-    function calcPrice(v) {
-      v = Number(v) || 0;
-      if (v <= 70) return 49;
-      const raw = v * 0.7 * 0.9;
-      return Math.floor(raw);
-    }
-
-    function updatePriceUI(v) {
-      const price = calcPrice(v);
-      priceBig.textContent = `₹${price}`;
-      priceVideos.textContent = v;
-      priceSmall.textContent = `for ${v} videos`;
-    }
-
-    // sync slider and number input
-    videoRange.addEventListener('input', (e) => {
-      videoCountInput.value = e.target.value;
-      updatePriceUI(e.target.value);
-    });
-    videoCountInput.addEventListener('change', (e) => {
-      let val = Number(e.target.value);
-      if (!val || val < 1) val = 1;
-      if (val > 600) val = 600;
-      videoCountInput.value = val;
-      videoRange.value = val;
-      updatePriceUI(val);
+    // --- Load all timezones dynamically ---
+    const timezoneSelect = document.getElementById("timezone");
+    Intl.supportedValuesOf('timeZone').forEach(zone => {
+      const opt = document.createElement("option");
+      opt.value = zone;
+      opt.textContent = zone;
+      timezoneSelect.appendChild(opt);
     });
 
-    // initial
-    updatePriceUI(videoCountInput.value);
+    // --- Pricing logic ---
+    const priceDisplay = document.getElementById("priceDisplay");
+    const videoCountInput = document.getElementById("videoCount");
 
-    // Next button behavior (for now: validate & show placeholder results)
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const channel = channelInput.value.trim();
-      const tz = tzSelect.value;
-      const videos = Number(videoCountInput.value) || 0;
-      if (!channel) { alert('Please enter a channel URL, @username or channel ID.'); return; }
-      if (videos < 1) { alert('Enter a valid number of videos.'); return; }
+    function updatePrice() {
+      const videos = parseInt(videoCountInput.value);
+      let price = 0;
 
-      // show a loading placeholder in results area and show videoList container
-      const resultsArea = document.getElementById('resultsArea');
-      const videoList = document.getElementById('videoList');
-      resultsArea.style.display = 'none';
-      videoList.style.display = 'block';
-      videoList.innerHTML = `<div class="placeholder">Preparing to fetch ${videos} videos for <strong>${channel}</strong> in timezone <strong>${tz}</strong>. This demo will show placeholder entries. Click "Fetch Data" to continue.</div>
-        <div style="margin-top:12px; display:flex; gap:8px;">
-          <button id="fetchDataBtn" class="primary">Fetch Data</button>
-          <button id="backBtn" class="ghost">Back</button>
-        </div>`;
-
-      document.getElementById('backBtn').addEventListener('click', () => {
-        videoList.style.display = 'none';
-        resultsArea.style.display = 'block';
-      });
-
-      document.getElementById('fetchDataBtn').addEventListener('click', () => {
-        // for now show demo placeholders (we'll connect real API next)
-        populatePlaceholders(videos, tz);
-      });
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      channelInput.value = '';
-      videoCountInput.value = 50;
-      videoRange.value = 50;
-      tzSelect.value = 'Asia/Kolkata';
-      updatePriceUI(50);
-      document.getElementById('videoList').style.display = 'none';
-      document.getElementById('resultsArea').style.display = 'block';
-    });
-
-    // placeholder populate while we implement real fetch
-    function populatePlaceholders(count, tz) {
-      const videoList = document.getElementById('videoList');
-      const rows = [];
-      for (let i=1;i<=Math.min(count,200);i++){ // limit placeholders to 200 to keep UI responsive
-        rows.push({
-          title: `Demo video title ${i}`,
-          publishedAtUTC: new Date(Date.now() - i*86400000).toISOString(), // previous days demo
-          views: Math.floor(Math.random()*2000000).toLocaleString()
-        });
+      if (videos <= 30) {
+        priceDisplay.textContent = "Free for first 30 videos 🎁";
+        return;
+      } 
+      else if (videos <= 70) {
+        price = 49;
+      } 
+      else {
+        price = Math.floor(videos * 0.7 * 0.9); // 10% discount
       }
 
-      // render cards with timezone conversion
-      videoList.innerHTML = '';
-      rows.forEach((v, idx) => {
-        const utc = new Date(v.publishedAtUTC);
-        // convert to selected tz using Intl if available (will show local string)
-        const tz = tzSelect.value;
-        let dateStr, timeStr;
-        try {
-          dateStr = new Intl.DateTimeFormat('en-GB', { timeZone: tz, year:'numeric', month:'short', day:'2-digit' }).format(utc);
-          timeStr = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour:'2-digit', minute:'2-digit', hour12:true }).format(utc);
-        } catch(e){
-          // fallback add offset manually (not perfect for DST)
-          const offsetMins = 0;
-          const local = new Date(utc.getTime() + offsetMins*60000);
-          dateStr = local.toLocaleDateString(); timeStr = local.toLocaleTimeString();
-        }
-
-        const card = document.createElement('div');
-        card.className = 'videoCard';
-        card.innerHTML = `<div class="thumb">Thumbnail</div>
-          <div class="meta">
-            <h4>${(idx+1)}. ${escapeHtml(v.title)}</h4>
-            <p>Published: ${dateStr} • ${timeStr} • Views: ${v.views}</p>
-            <p style="margin-top:6px;"><a href="#" style="color:#9fe0ff; text-decoration:none;">Watch on YouTube</a></p>
-          </div>`;
-        videoList.appendChild(card);
-      });
-
+      priceDisplay.textContent = `₹${price} for ${videos} videos`;
     }
 
-    // small escape helper
-    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+    videoCountInput.addEventListener("input", updatePrice);
+    updatePrice();
 
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      alert("Next feature will show YouTube video data soon!");
+    });
   </script>
 </body>
 </html>
