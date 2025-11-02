@@ -75,43 +75,63 @@
   </div>
 
   <script>
-    // --- Load all timezones dynamically ---
-    const timezoneSelect = document.getElementById("timezone");
-    Intl.supportedValuesOf('timeZone').forEach(zone => {
-      const opt = document.createElement("option");
-      opt.value = zone;
-      opt.textContent = zone;
-      timezoneSelect.appendChild(opt);
-    });
+  // --- Load all timezones dynamically ---
+  const timezoneSelect = document.getElementById("timezone");
+  Intl.supportedValuesOf("timeZone").forEach(zone => {
+    const opt = document.createElement("option");
+    opt.value = zone;
+    opt.textContent = zone;
+    timezoneSelect.appendChild(opt);
+  });
 
-    // --- Pricing logic ---
-    const priceDisplay = document.getElementById("priceDisplay");
-    const videoCountInput = document.getElementById("videoCount");
+  // --- Elements ---
+  const priceDisplay = document.getElementById("priceDisplay");
+  const videoCountInput = document.getElementById("videoCount");
 
-    function updatePrice() {
-      const videos = parseInt(videoCountInput.value);
-      let price = 0;
+  // --- Pricing logic ---
+  function updatePrice() {
+    const videos = parseInt(videoCountInput.value);
+    let price = 0;
 
-      if (videos <= 30) {
-        priceDisplay.textContent = "Free for first 30 videos 🎁";
-        return;
-      } 
-      else if (videos <= 70) {
-        price = 49;
-      } 
-      else {
-        price = Math.floor(videos * 0.7 * 0.9); // 10% discount
-      }
-
-      priceDisplay.textContent = `₹${price} for ${videos} videos`;
+    if (videos <= 30) {
+      priceDisplay.textContent = "Free for up to 30 videos 🎁";
+      return;
+    } 
+    else if (videos <= 70) {
+      price = Math.floor(videos * 0.7); // normal rate
+    } 
+    else {
+      price = Math.floor(videos * 0.7 * 0.9); // 10% off
     }
 
-    videoCountInput.addEventListener("input", updatePrice);
-    updatePrice();
+    priceDisplay.textContent = `₹${price} for ${videos} videos`;
+  }
 
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      alert("Next feature will show YouTube video data soon!");
-    });
-  </script>
+  // --- Add input box for YouTube link ---
+  const youtubeInputDiv = document.createElement("div");
+  youtubeInputDiv.classList.add("input-group");
+  youtubeInputDiv.innerHTML = `
+    <label for="youtubeLink">📺 Enter YouTube Channel URL or ID:</label>
+    <input type="text" id="youtubeLink" placeholder="e.g. https://www.youtube.com/@channelname">
+  `;
+  document.querySelector("form").insertBefore(youtubeInputDiv, document.querySelector(".input-group:nth-of-type(2)"));
+
+  // --- Event listeners ---
+  videoCountInput.addEventListener("input", updatePrice);
+  updatePrice();
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    const url = document.getElementById("youtubeLink").value.trim();
+    if (!url) {
+      alert("Please enter a YouTube channel URL or ID before proceeding.");
+      return;
+    }
+
+    const videos = parseInt(videoCountInput.value);
+    const selectedZone = timezoneSelect.value;
+    alert(`✅ Channel: ${url}\n🌍 Timezone: ${selectedZone}\n🎞️ Videos: ${videos}\n💰 Price: ${priceDisplay.textContent}`);
+  });
+</script>
+
 </body>
 </html>
